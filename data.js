@@ -57,7 +57,7 @@ export const CategoryList = [
 
     {
       id: 5,
-      title: 'Rediscovering Vinyl: The Resurgence of Analog',
+      title: 'Kunyit',
       category: 'Herbal',
       image:
           'https://i.pinimg.com/236x/8d/dd/f9/8dddf97b873fe324eade3c38d177ec4e.jpg',
@@ -65,7 +65,7 @@ export const CategoryList = [
     },
     {
       id: 6,
-      title: 'How to use Redux in ReactJS',
+      title: 'Temulawak',
       category: 'Herbal',
       image:
          'https://i.pinimg.com/564x/47/49/1e/47491e303049b04c5b484e09b8bb8150.jpg',
@@ -74,7 +74,7 @@ export const CategoryList = [
     },
     {
       id: 7,
-      title: 'Boosting Traffic with SEO',
+      title: 'Beras Kencur',
       category: 'Herbal',
       image:
           'https://i.pinimg.com/236x/17/ac/6f/17ac6f011a83811708617e0dc6d1f72d.jpg',
@@ -83,7 +83,7 @@ export const CategoryList = [
     },
     {
       id: 8,
-      title: 'Culinary Adventures: Exploring Exotic Flavors',
+      title: 'Sinom',
       category: 'Herbal',
       image:
           'https://i.pinimg.com/564x/ae/85/0c/ae850ca669cb3ce3b05b4cc4116f8439.jpg',
@@ -92,38 +92,28 @@ export const CategoryList = [
     },
     {
       id: 9,
-      title: 'Sneaker Culture',
+      title: 'Jahe',
       category: 'Herbal',
       image:
           'https://i.pinimg.com/236x/b1/5c/71/b15c71cc745782c8752e355fa730b78a.jpg',
       createdAt: 'Jul 25, 2023',
       totalComments: 89,
     },
+  ];
+
+  export const detail =[
     {
       id: 10,
-      title: 'Balancing Work and Well-being',
-      category: 'Lifestyle',
-      image:
-        'https://images.unsplash.com/photo-1602192509154-0b900ee1f851?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80',
-      createdAt: 'Jul 25, 2023',
-      totalComments: 89,
-    },
-    {
-      id: 11,
-      title: 'Home Fitness Revolution',
-      category: 'Health',
-      image:
-        'https://images.unsplash.com/photo-1540497077202-7c8a3999166f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80',
-      createdAt: 'Jul 25, 2023',
-      totalComments: 89,
-    },
-    {
-      id: 12,
-      title: 'Intersection of Fashion',
-      category: 'Fashion',
-      image:
-        'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80',
-      createdAt: 'Jul 25, 2023',
-      totalComments: 89,
+      title: 'Catatan Untuk penjual',
+      category: 'Herbal',
     },
   ];
+
+  export const ProfileData = {
+    profilePict:
+    "https://i.pinimg.com/236x/42/75/70/427570c6b60231baec6f28c8efa1dad1.jpg",
+    name: 'Zain Aryanta',
+    createdAt: '29 Oktober 2023',
+    transaksi: 10,
+    saldo: 50000,
+  };

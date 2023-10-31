@@ -108,11 +108,11 @@ const itemHorizontal = StyleSheet.create({
 
   const styles = StyleSheet.create({
     listCategory: {
-      paddingVertical: 4,
+      paddingVertical: 5,
     },
 
     header: {
-      marginVertical: 4,
+      marginVertical: 5,
     }
   
   });

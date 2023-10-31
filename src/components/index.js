@@ -1,3 +1,5 @@
 import ItemSmall from './ItemSmall'
 import ListHorizontal from './ListHorizontal'
-export {ItemSmall, ListHorizontal}
+import ItemOrder from './ItemOrder'
+import ItemProfile from './ItemProfile'
+export {ItemSmall,ItemOrder,ItemProfile, ListHorizontal}

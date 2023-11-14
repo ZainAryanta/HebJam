@@ -39,20 +39,20 @@ const ItemOrder = ({ item, onPress, variant }) => {
                 style={styles.blogTitle}>
                 {item.title}
               </Text>
-              <View style={{ ...styles.cardContent, backgroundColor: colors.black(0.15), paddingVertical: 15 }}>
+              <TouchableOpacity style={{ ...styles.cardContent, backgroundColor: colors.black(0.15), paddingVertical: 15,paddingHorizontal:15, }}>
                 <Text style={{ ...styles.cardContent, textAlign: 'center' }}>Detail Pesanan</Text>
-              </View>
+              </TouchableOpacity>
             </View>
             <View style={{}}>
-        <TouchableOpacity style={{ backgroundColor: '#79AC78', padding: 5, borderRadius: 15 ,top:280}} onPress={() => { }}>
-          <Text style={{ textAlign: 'center', color: colors.black(), fontSize: 25 }}>Bayar</Text>
-        </TouchableOpacity>
-      </View>
+              <TouchableOpacity style={{ backgroundColor: '#79AC78', padding: 5, borderRadius: 15, top: 260 }} onPress={() => { }}>
+                <Text style={{ textAlign: 'center', color: colors.black(), fontSize: 25 }}>Bayar</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </TouchableOpacity>
       </View>
     </View>
-    
+
   );
 };
 
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.black(0.03),
     borderRadius: 15,
     width: '100%',
-    height:700,
+    height: 700,
   },
   cardbut: {
     padding: 5,
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     padding: 10,
-    borderRadius:15,
+    borderRadius: 15,
   },
   cardInfo: {
     flexDirection: 'row',

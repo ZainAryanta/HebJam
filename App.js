@@ -1,17 +1,10 @@
-// import * as React from 'react';
-// import {Home} from './src/screens';
-// export default function App() {
-//   return <Home />;
-// }
-
 import * as React from 'react';
-import { Order } from './src/screens';
+import { NavigationContainer } from '@react-navigation/native';
+import Router from './src/navigation/Router';
 export default function App() {
-  return <Order />;
+  return (
+    <NavigationContainer>
+     <Router/>
+    </NavigationContainer>
+  );
 }
-
-// import * as React from 'react';
-// import { Profile } from './src/screens';
-// export default function App() {
-//   return <Profile />;
-// }

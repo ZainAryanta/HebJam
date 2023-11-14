@@ -4,6 +4,8 @@ import { Element3, Like1, Send, ProfileCircle, Book, Home2, Message, Add } from 
 import { BlogList } from '../../../data';
 import { fontType, colors } from '../../theme';
 import { ListHorizontal, ItemSmall } from '../../components';
+import { useNavigation, createStackNavigator } from '@react-navigation/stack';
+import { NavigationContainer } from '@react-navigation/native';
 
 export default function Home() {
     return (
@@ -11,28 +13,64 @@ export default function Home() {
             <View style={styles.header}>
                 <Text style={styles.title}>HebJam.</Text>
             </View>
+            {/* <View style={styles.listCategory}>
+                <FlatListCategory />
+            </View> */}
             <ListBlog />
-            <View style={styles.footer}>
-                <TouchableOpacity onPress={() => 'home'} style={styles.startbottom}>
-                    <Home2 style={{ marginLeft: 30, marginRight: 25 }} color={colors.darkModeBlack()} size={25} />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => 'home'} style={styles.startbottom}>
-                    <Book style={{ marginLeft: 30, marginRight: 25 }} color={colors.darkModeBlack()} size={25} />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => 'home'} style={styles.startbottom}>
-                    <Message style={{ marginLeft: 30, marginRight: 25 }} color={colors.darkModeBlack()} size={25} />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => 'home'} style={styles.startbottom}>
-                    <ProfileCircle style={{ marginLeft: 30, marginRight: 25 }} color={colors.darkModeBlack()} size={25} />
-                </TouchableOpacity>
-            </View>
+
         </View>
     );
 }
 
+const Stack = createStackNavigator();
+const AppNavigator = () => {
+    return (
+        <NavigationContainer>
+            <Stack.Navigator initialRouteName="Home">
+                <Stack.Screen name="Home" component={Home} />
+                <Stack.Screen name="Detail" component={Detail} />
+            </Stack.Navigator>
+        </NavigationContainer>
+    );
+};
+const Orderdetail = ({ item, onPress, color }) => {
+    return (
+        <TouchableOpacity onPress={onPress}>
+            <View style={BlogList.item}>
+                <Text style={{ ...styles.title }}>{item.categoryName}</Text>
+            </View>
+        </TouchableOpacity>
+    );
+};
+
+const FlatListCategory = () => {
+    const [selected, setSelected] = useState(1);
+    const renderItem = ({ item }) => {
+        const color = item.id === selected ? colors.blue() : colors.black();
+        return (
+            <Orderdetail
+                item={item}
+                onPress={() => setSelected(item.id)}
+                color={color}
+            />
+        );
+    };
+    return (
+        <FlatList
+            data={BlogList}
+            keyExtractor={item => item.id}
+            renderItem={item => renderItem({ ...item })}
+            ItemSeparatorComponent={() => <View style={{ width: 5 }} />}
+            contentContainerStyle={{ paddingLeft: 5 }}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+        />
+    );
+};
+
 const ListBlog = () => {
     const horizontalData = BlogList.slice(0, 5);
-    const verticalData = BlogList.slice(5);
+    const verticalData = BlogList.slice(4);
     return (
         <ScrollView showsVerticalScrollIndicator={false}>
             <View style={styles.listBlog}>
@@ -53,7 +91,7 @@ const ListBlog = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: colors.darkgreen(),
     },
     header: {
         paddingHorizontal: 30,
@@ -61,7 +99,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#79AC78',
         flexDirection: 'row',
         alignItems: 'flex-end',
-
+        borderColor: colors.gold(),
+        borderWidth: 1,
         height: 55,
         elevation: 8,
         paddingTop: 8,
@@ -73,13 +112,13 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         flexDirection: 'row',
         backgroundColor: 'white',
-      },
-      startbottom: {
+    },
+    startbottom: {
         flexDirection: 'row',
         alignItems: 'center',
         left: 25,
-        color : 'black'
-      },
+        color: 'black'
+    },
     title: {
         fontSize: 25,
         fontFamily: fontType['Pjs-ExtraBold'],

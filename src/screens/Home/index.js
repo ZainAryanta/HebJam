@@ -13,6 +13,7 @@ export default function Home() {
         <View style={styles.container}>
             <ListBlog />
         </View>
+        
     );
 }
 

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Text, View, FlatList, Image, ImageBackground, TouchableOpacity } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { ScrollView, StyleSheet, Text, View, FlatList, Image, ImageBackground, TouchableOpacity, Animated } from 'react-native';
 import { Element3, Like1, Send, ProfileCircle, Book, Home2, Message, Add } from 'iconsax-react-native';
 import { BlogList } from '../../../data';
 import { fontType, colors } from '../../theme';
@@ -8,16 +8,10 @@ import { useNavigation, createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 
 export default function Home() {
+
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
-                <Text style={styles.title}>HebJam.</Text>
-            </View>
-            {/* <View style={styles.listCategory}>
-                <FlatListCategory />
-            </View> */}
             <ListBlog />
-
         </View>
     );
 }
@@ -71,19 +65,44 @@ const FlatListCategory = () => {
 const ListBlog = () => {
     const horizontalData = BlogList.slice(0, 5);
     const verticalData = BlogList.slice(4);
+    const scrollY = useRef(new Animated.Value(0)).current;
+    const diffClampY = Animated.diffClamp(scrollY, 0, 52);
+    const headerY = diffClampY.interpolate({
+        inputRange: [0, 52],
+        outputRange: [0, -52],
+    });
+    const bottomBarY = diffClampY.interpolate({
+        inputRange: [0, 52],
+        outputRange: [0, 52],
+    });
     return (
-        <ScrollView showsVerticalScrollIndicator={false}>
-            <View style={styles.listBlog}>
-                <Text style={{ fontSize: 18, fontWeight: 'bold', marginLeft: 25, marginTop: 10 }}>NEWS</Text>
-                <ListHorizontal data={horizontalData} />
-                <View style={styles.listCard}>
-                    <Text style={{ fontSize: 25, fontWeight: 'bold', marginLeft: 25, marginVertical: 15 }}>Featured Products</Text>
-                    {verticalData.map((item, index) => (
-                        <ItemSmall item={item} key={index} />
-                    ))}
+        <View>
+            <Animated.View style={[styles.header, { transform: [{ translateY: headerY }] }]}>
+                <Text style={styles.title}>HebJam.</Text>
+            </Animated.View>
+            <Animated.ScrollView
+
+                showsVerticalScrollIndicator={false}
+                onScroll={Animated.event(
+                    [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+                    { useNativeDriver: true },
+                )}
+                contentContainerStyle={{
+                
+                    paddingBottom: 70,
+                }}>
+                <View style={styles.listBlog}>
+                    <Text style={{ fontSize: 18, fontWeight: 'bold', marginLeft: 25, marginTop: 10 }}>NEWS</Text>
+                    <ListHorizontal data={horizontalData} />
+                    <View style={styles.listCard}>
+                        <Text style={{ fontSize: 25, fontWeight: 'bold', marginLeft: 25, marginVertical: 15 }}>Featured Products</Text>
+                        {verticalData.map((item, index) => (
+                            <ItemSmall item={item} key={index} />
+                        ))}
+                    </View>
                 </View>
-            </View>
-        </ScrollView>
+            </Animated.ScrollView>
+        </View>
     );
 };
 

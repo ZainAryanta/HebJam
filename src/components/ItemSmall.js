@@ -39,13 +39,12 @@ const ItemSmall = ({ item }) => {
               />
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-              <View style={{ backgroundColor: '#79AC78', padding: 5, borderRadius: 10 }}>
+              <View style={{ backgroundColor: colors.darkgreen(), padding: 5, borderRadius: 15 }}>
                 <Add size={30} color={colors.white()} />
               </View>
             </View>
           </View>
         </View>
-
       </View>
     </TouchableOpacity>
   );
@@ -65,12 +64,13 @@ const itemVertical = StyleSheet.create({
     paddingHorizontal: 3,
     paddingVertical: 5,
     gap: 15,
+    
   },
   cardItem: {
     height: 140,
     backgroundColor: '#ffffff',
-    borderWidth: 3,
-    borderColor: '#618264',
+    borderWidth: 4,
+    borderColor: colors.gold(),
     flexDirection: 'row',
     borderRadius: 20,
   },
@@ -91,7 +91,7 @@ const itemVertical = StyleSheet.create({
   },
   cardImage: {
     width: 100,
-    height: 135,
+    height: 132,
     borderRadius: 10,
     resizeMode: 'cover',
   },

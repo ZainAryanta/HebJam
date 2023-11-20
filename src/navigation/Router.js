@@ -18,6 +18,7 @@ function MainApp() {
           paddingBottom: 10,
           paddingTop: 10,
           height: 60,
+          backgroundColor: colors.darkModeBlack(),
         },
         tabBarLabelStyle: {
           marginTop: 5,

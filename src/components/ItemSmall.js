@@ -32,11 +32,6 @@ const ItemSmall = ({ item }) => {
                   {item.title}
                 </Text>
               </View>
-              <Receipt21
-                color={colors.black(0.6)}
-                variant="Linear"
-                size={20}
-              />
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
               <View style={{ backgroundColor: colors.darkgreen(), padding: 5, borderRadius: 15 }}>

@@ -59,6 +59,7 @@ export const BlogList = [
     id: 5,
     title: 'Kunyit',
     category: 'Herbal',
+    price: 'Rp 15.000',
     image:
       'https://i.pinimg.com/236x/8d/dd/f9/8dddf97b873fe324eade3c38d177ec4e.jpg',
     detail: 'Sebuah herbal yang sehat dan kaya akan manfaat bagi tubuh manusia ,Kunyit (Curcuma longa) adalah tanaman asli Asia Selatan yang terkenal karena akarnya yang kaya akan senyawa aktif, terutama kurkumin. Kunyit telah lama digunakan sebagai rempah-rempah dalam masakan dan juga memiliki sejarah penggunaan dalam pengobatan tradisional. ',
@@ -68,6 +69,7 @@ export const BlogList = [
     id: 6,
     title: 'Temulawak',
     category: 'Herbal',
+    price: 'Rp 12.000',
     image:
       'https://i.pinimg.com/564x/47/49/1e/47491e303049b04c5b484e09b8bb8150.jpg',
     detail: 'Sebuah herbal yang sehat dan kaya akan manfaat bagi tubuh manusia Temulawak adalah tanaman herbal yang memiliki nama ilmiah Curcuma xanthorrhiza. Tanaman ini berasal dari Indonesia dan merupakan bagian dari keluarga Zingiberaceae, yang sama dengan jahe. Temulawak telah lama digunakan dalam pengobatan tradisional di Indonesia karena memiliki berbagai manfaat kesehatan.',
@@ -78,6 +80,7 @@ export const BlogList = [
     id: 7,
     title: 'Beras Kencur',
     category: 'Herbal',
+    price: 'Rp 10.000',
     image:
       'https://i.pinimg.com/236x/17/ac/6f/17ac6f011a83811708617e0dc6d1f72d.jpg',
     detail: 'Sebuah herbal yang sehat dan kaya akan manfaat bagi tubuh manusia Kencur adalah tanaman yang sering digunakan sebagai bumbu masakan dan obat tradisional di berbagai negara di Asia, terutama Indonesia. Kencur telah digunakan dalam pengobatan tradisional untuk mengatasi masalah pencernaan, gangguan pernapasan, dan sakit kepala.',
@@ -88,6 +91,7 @@ export const BlogList = [
     id: 8,
     title: 'Sinom',
     category: 'Herbal',
+    price: 'Rp 10.000',
     image:
       'https://i.pinimg.com/564x/ae/85/0c/ae850ca669cb3ce3b05b4cc4116f8439.jpg',
     detail: 'Sebuah herbal yang sehat dan kaya akan manfaat bagi tubuh manusia',
@@ -98,6 +102,7 @@ export const BlogList = [
     id: 9,
     title: 'Jahe',
     category: 'Herbal',
+    price: 'Rp 10.000',
     image:
       'https://i.pinimg.com/236x/b1/5c/71/b15c71cc745782c8752e355fa730b78a.jpg',
     detail: 'Sebuah herbal yang sehat dan kaya akan manfaat bagi tubuh manusia',

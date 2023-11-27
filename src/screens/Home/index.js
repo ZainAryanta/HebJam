@@ -1,29 +1,40 @@
 import React, { useState, useRef } from 'react';
-import { ScrollView, StyleSheet, Text, View, FlatList, Image, ImageBackground, TouchableOpacity, Animated } from 'react-native';
-import { Element3, Like1, Send, ProfileCircle, Book, Home2, Message, Add } from 'iconsax-react-native';
+import { ScrollView, StyleSheet, Text, View, FlatList, Image, ImageBackground,TouchableWithoutFeedback, TouchableOpacity, Animated } from 'react-native';
+import { Element3, Like1, Send, ProfileCircle, Book, Home2, Message, Add, SearchNormal1 } from 'iconsax-react-native';
 import { BlogList } from '../../../data';
 import { fontType, colors } from '../../theme';
-import { ListHorizontal, ItemSmall } from '../../components';
-import { useNavigation, createStackNavigator } from '@react-navigation/stack';
+import { ListHorizontal, ItemSmall, Searchbar } from '../../components';
+import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
+
 
 export default function Home() {
-
     return (
         <View style={styles.container}>
+            <Itemsearch />
             <ListBlog />
         </View>
-        
     );
 }
-
+const Itemsearch = () => {
+    const navigation = useNavigation();
+    return (
+        <TouchableWithoutFeedback onPress={() => navigation.navigate("SearchPage")}>
+            <View style={styles.bar}>
+                <SearchNormal1 size={20} color={colors.white(1.0)} variant="Linear" />
+                <Text style={styles.placeholder}>Search</Text>
+            </View>
+        </TouchableWithoutFeedback >
+    );
+};
 const Stack = createStackNavigator();
 const AppNavigator = () => {
     return (
         <NavigationContainer>
             <Stack.Navigator initialRouteName="Home">
                 <Stack.Screen name="Home" component={Home} />
-                <Stack.Screen name="Detail" component={Detail} />
+                <Stack.Screen name="Orderdetail" component={Orderdetail} />
             </Stack.Navigator>
         </NavigationContainer>
     );
@@ -89,7 +100,7 @@ const ListBlog = () => {
                     { useNativeDriver: true },
                 )}
                 contentContainerStyle={{
-                
+
                     paddingBottom: 70,
                 }}>
                 <View style={styles.listBlog}>
@@ -148,5 +159,20 @@ const styles = StyleSheet.create({
     },
     listCategory: {
         paddingVertical: 10,
+    },
+    bar: {
+        flexDirection: 'row',
+        padding: 10,
+        gap: 10,
+        alignItems: 'center',
+        backgroundColor: colors.grey(0.05),
+        borderRadius: 10,
+        flex: 1,
+    },
+    placeholder: {
+        fontSize: 14,
+        fontFamily: fontType['Pjs-Medium'],
+        color: colors.grey(0.5),
+        lineHeight: 18,
     },
 });

@@ -2,4 +2,6 @@ import Home from "./Home";
 import Order from "./Order";
 import Profile from "./Profile";
 import Orderdetail from "./Orderdetail";
-export {Home, Order,Profile,Orderdetail}
+import Search from "./Search";
+import Homeadd from "./Homeadd";
+export {Home, Order,Profile,Orderdetail,Search,Homeadd}

@@ -1,139 +1,106 @@
-import { StyleSheet, Text, View, TouchableOpacity, Button } from 'react-native';
-import React from 'react';
-import { Receipt21, Clock, Message } from 'iconsax-react-native';
+import React, { useState } from 'react';
+import { ScrollView, StyleSheet, Text, View, FlatList, Image, ImageBackground, TouchableOpacity } from 'react-native';
+import { Like1, Send, MessageText1, ProfileCircle, Receipt21, Clock, Message, Add, Check } from 'iconsax-react-native';
+import { BlogList, CategoryList } from './data';
 import FastImage from 'react-native-fast-image';
 import { fontType, colors } from '../theme';
-import { BlogList, CategoryList, detail } from '../../data';
+import { useNavigation } from '@react-navigation/native';
 
-const ItemOrder = ({ item, onPress, variant }) => {
+const ItemOrder = ({ item }) => {
+  const navigation = useNavigation();
   return (
-    <View style={{ flexDirection: 'column', justifyContent: 'space-between', flex: 1, }}>
-      <View>
-        <TouchableOpacity style={styles.cardItem} onPress={() => { }}>
+    <TouchableOpacity style={itemVertical.container} onPress={() => navigation.navigate('Orderdetail', {  id: item.id })}>
+      <View style={itemVertical.listCard}>
+        <View style={itemVertical.cardItem}>
           <FastImage
-            style={styles.cardImage}
+            resizeMode={FastImage.resizeMode.cover}
+            style={itemVertical.cardImage}
             source={{
-              uri: item.image,
-              headers: { Authorization: 'someAuthToken' },
               priority: FastImage.priority.high,
+              uri: item.image,
             }}
-            resizeMode={FastImage.resizeMode.cover}>
-            <View style={styles.cardContent}>
-              <View style={styles.cardCategory}>
-                <View style={styles.categoryBadge}>
-                  <Text style={styles.categoryLabel}>{item.category}</Text>
-                </View>
-              </View>
-              <View>
-                <View style={styles.cardIcon}>
-                  <TouchableOpacity onPress={onPress}>
-                    <Receipt21 color={colors.white()} variant={variant} size={20} />
-                  </TouchableOpacity>
-                </View>
+          />
+          <View style={itemVertical.cardContent}>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}>
+              <View style={{ gap: 5, width: '80%' }}>
+                <Text style={itemVertical.cardCategory}>{item.category}</Text>
+                <Text style={itemVertical.cardTitle}>
+                  {item.title}
+                </Text>
               </View>
             </View>
-          </FastImage>
-          <View style={{ paddingHorizontal: 15, paddingVertical: 10 }}>
-            <View style={{ gap: 10 }}>
-              <Text
-                style={styles.blogTitle}>
-                {item.title}
-              </Text>
-              <TouchableOpacity style={{ ...styles.cardContent, backgroundColor: colors.black(0.15), paddingVertical: 15,paddingHorizontal:15, }}>
-                <Text style={{ ...styles.cardContent, textAlign: 'center' }}>Detail Pesanan</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={{}}>
-              <TouchableOpacity style={{ backgroundColor: '#79AC78', padding: 5, borderRadius: 15, top: 260 }} onPress={() => { }}>
-                <Text style={{ textAlign: 'center', color: colors.black(), fontSize: 25 }}>Bayar</Text>
-              </TouchableOpacity>
+            <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+              <View style={{ backgroundColor: colors.darkgreen(), padding: 5, borderRadius: 15 }}>
+                <Check size={30} color={colors.white()} />
+              </View>
             </View>
           </View>
-        </TouchableOpacity>
+        </View>
       </View>
-    </View>
-
+    </TouchableOpacity>
   );
 };
 
 export default ItemOrder;
 
-const styles = StyleSheet.create({
+const itemVertical = StyleSheet.create({
+  container: {
+    marginHorizontal: 20,
+  },
+  header: {
+    marginVertical: 10,
+  },
+
+  listCard: {
+    paddingHorizontal: 3,
+    paddingVertical: 5,
+    gap: 15,
+    
+  },
   cardItem: {
-    backgroundColor: colors.black(0.03),
-    borderRadius: 15,
-    width: '100%',
-    height: 700,
-  },
-  cardbut: {
-    padding: 5,
-    // textAlign: 'center',
-    // justifyContent: 'flex-start',
-    backgroundColor: '#79AC78',
-    borderRadius: 30,
-  },
-  cardImage: {
-    marginTop: 15,
-    width: '100%',
-    height: 205,
-    borderRadius: 15,
-  },
-  cardContent: {
+    height: 140,
+    backgroundColor: '#ffffff',
+    borderWidth: 4,
+    borderColor: colors.gold(),
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 10,
-    borderRadius: 15,
-  },
-  cardInfo: {
-    flexDirection: 'row',
-    gap: 20,
-    alignItems: 'center',
-  },
-  cardTitle: {
-    fontFamily: fontType['Pjs-Bold'],
-    fontSize: 14,
-    color: colors.white(),
-  },
-  cardText: {
-    fontSize: 12,
-    fontFamily: fontType['Pjs-Medium'],
-    color: colors.grey(0.6),
-    marginHorizontal: 5,
-    marginTop: 0,
-  },
-  cardIcon: {
-    backgroundColor: colors.white(0.33),
-    padding: 5,
-    borderColor: colors.white(),
-    borderWidth: 0.5,
-    borderRadius: 5,
+    borderRadius: 20,
   },
   cardCategory: {
-    justifyContent: 'flex-end',
-    height: '100%',
-    gap: 2,
-    maxWidth: '60%',
-  },
-  categoryBadge: {
-    backgroundColor: colors.white(),
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 15,
-  },
-  categoryLabel: {
+    color: colors.black(),
     fontSize: 10,
     fontFamily: fontType['Pjs-SemiBold'],
-    color: colors.blue(),
   },
-  blogTitle: {
-    fontSize: 30,
+  cardTitle: {
+    fontSize: 14,
     fontFamily: fontType['Pjs-Bold'],
     color: colors.black(),
   },
-  blogContent: {
-    fontSize: 15,
-    lineHeight: 5,
+  cardText: {
+    fontSize: 10,
     fontFamily: fontType['Pjs-Medium'],
-    color: colors.grey(),
-  }
+    color: colors.black(),
+  },
+  cardImage: {
+    width: 100,
+    height: 132,
+    borderRadius: 10,
+    resizeMode: 'cover',
+  },
+  cardInfo: {
+    flexDirection: 'row',
+    gap: 5,
+    alignItems: 'center',
+  },
+  cardContent: {
+    gap: 10,
+    justifyContent: 'space-between',
+    paddingRight: 10,
+    paddingLeft: 10,
+    flex: 1,
+    paddingVertical: 10,
+  },
 });

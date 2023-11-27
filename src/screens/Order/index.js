@@ -4,7 +4,7 @@ import { ScrollView, StyleSheet, Text, View, FlatList, Image, ImageBackground, T
 import { Element3, Like1, Send, ProfileCircle, Book, Home2, Message, Add, Receipt21 } from 'iconsax-react-native';
 import { BlogList } from '../../../data';
 import { fontType, colors } from '../../theme';
-import { ItemDetail, ItemProfile, ListHorizontal, ItemSmall } from '../../components';
+import { ItemDetail, ItemProfile, ListHorizontal, ItemSmall, ItemOrder } from '../../components';
 
 // const Order = () => {
 //   // const horizontalData = BlogList.map((item) => {
@@ -83,7 +83,7 @@ const ListBlog = () => {
         <View style={styles.listCard}>
           <Text style={{ fontSize: 25, fontWeight: 'bold', marginLeft: 25, marginVertical: 15 }}>Order List</Text>
           {verticalData.map((item, index) => (
-            <ItemSmall item={item} key={index} />
+            <ItemOrder item={item} key={index} />
           ))}
         </View>
       </View>

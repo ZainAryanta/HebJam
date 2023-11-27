@@ -10,7 +10,7 @@ const ItemHorizontal = ({ item, variant, onPress }) => {
   const navigation = useNavigation();
   return (
     // <TouchableOpacity style={styles.listCategory}>
-    <TouchableOpacity style={itemHorizontal.cardItem} onPress={() => navigation.navigate('Order', {blogId: item.id})}>
+    <TouchableOpacity style={itemHorizontal.cardItem} onPress={() => navigation.navigate('Orderdetail', {id: item.id})}>
  
       <View style={{ ...itemHorizontal.cardItem, marginTop:10}}>
         <FastImage

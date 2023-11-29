@@ -19,7 +19,7 @@ export default Search;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.white(),
+    backgroundColor: colors.darkgreen(),
   },
   header: {
     paddingHorizontal: 24,
@@ -32,6 +32,9 @@ const styles = StyleSheet.create({
     zIndex: 1000,
     right: 0,
     left: 0,
-    backgroundColor: colors.white(),
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: colors.gold(),
+    backgroundColor: colors.darkgreen(0.9),
   },
 });

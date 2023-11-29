@@ -95,6 +95,18 @@ const Router = () => {
         }}
       />
       <Stack.Screen
+        name="Homeadd"
+        component={Homeadd}
+        options={{
+          headerShown: false,
+          animationEnabled: true,
+          animationTypeForReplace: 'pop',
+          gestureEnabled: true,
+          gestureDirection: 'horizontal',
+          ...TransitionPresets.SlideFromRightIOS,
+        }}
+      />
+      <Stack.Screen
         name="SearchPage"
         component={Search}
         options={{

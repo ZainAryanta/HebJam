@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { ScrollView, StyleSheet, Text, View, FlatList, Image, ImageBackground,TouchableWithoutFeedback, TouchableOpacity, Animated } from 'react-native';
+import { ScrollView, StyleSheet, Text, View, FlatList, Image, ImageBackground, TouchableWithoutFeedback, TouchableOpacity, Animated } from 'react-native';
 import { Element3, Like1, Send, ProfileCircle, Book, Home2, Message, Add, SearchNormal1 } from 'iconsax-react-native';
 import { BlogList } from '../../../data';
 import { fontType, colors } from '../../theme';
@@ -12,22 +12,17 @@ import { useNavigation } from '@react-navigation/native';
 export default function Home() {
     return (
         <View style={styles.container}>
-            <Itemsearch />
+            
             <ListBlog />
         </View>
     );
 }
-const Itemsearch = () => {
-    const navigation = useNavigation();
-    return (
-        <TouchableWithoutFeedback onPress={() => navigation.navigate("SearchPage")}>
-            <View style={styles.bar}>
-                <SearchNormal1 size={20} color={colors.white(1.0)} variant="Linear" />
-                <Text style={styles.placeholder}>Search</Text>
-            </View>
-        </TouchableWithoutFeedback >
-    );
-};
+// const Itemsearch = () => {
+//     
+//     return (
+
+//     );
+// };
 const Stack = createStackNavigator();
 const AppNavigator = () => {
     return (
@@ -77,6 +72,7 @@ const FlatListCategory = () => {
 const ListBlog = () => {
     const horizontalData = BlogList.slice(0, 5);
     const verticalData = BlogList.slice(4);
+    const navigation = useNavigation();
     const scrollY = useRef(new Animated.Value(0)).current;
     const diffClampY = Animated.diffClamp(scrollY, 0, 52);
     const headerY = diffClampY.interpolate({
@@ -92,6 +88,12 @@ const ListBlog = () => {
             <Animated.View style={[styles.header, { transform: [{ translateY: headerY }] }]}>
                 <Text style={styles.title}>HebJam.</Text>
             </Animated.View>
+            <TouchableWithoutFeedback onPress={() => navigation.navigate("SearchPage")}>
+                <View style={styles.bar}>
+                    <SearchNormal1 size={20} color={colors.white(1.0)} variant="Linear" />
+                    <Text style={styles.placeholder}>Search</Text>
+                </View>
+            </TouchableWithoutFeedback >
             <Animated.ScrollView
 
                 showsVerticalScrollIndicator={false}
@@ -162,10 +164,14 @@ const styles = StyleSheet.create({
     },
     bar: {
         flexDirection: 'row',
-        padding: 10,
+        padding: 20,
         gap: 10,
+        marginTop: 20,
+        marginHorizontal: 30,
         alignItems: 'center',
-        backgroundColor: colors.grey(0.05),
+        backgroundColor: colors.gold(0.1),
+        borderWidth: 2.5,
+        borderColor: colors.gold(),
         borderRadius: 10,
         flex: 1,
     },

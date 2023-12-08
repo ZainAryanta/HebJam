@@ -10,23 +10,20 @@ import {
 import { ArrowLeft } from "iconsax-react-native";
 import { useNavigation } from "@react-navigation/native";
 import { fontType, colors } from "../../theme";
+import axios from 'axios';
+
+const [loading, setLoading] = useState(false);
+
+
+
 const AddBlogForm = () => {
-  // const dataCategory = [
-  //   { id: 1, name: "Food" },
-  //   { id: 2, name: "Sports" },
-  //   { id: 3, name: "Technology" },
-  //   { id: 4, name: "Fashion" },
-  //   { id: 5, name: "Health" },
-  //   { id: 6, name: "Lifestyle" },
-  //   { id: 7, name: "Music" },
-  //   { id: 8, name: "Car" },
-  // ];
   const [blogData, setBlogData] = useState({
     title: "",
-    content: "",
+    detail: "",
     category: {},
-    totalLikes: 0,
-    totalComments: 0,
+    price:"",
+    image:"",
+    // createdAt:{},
   });
   const handleChange = (key, value) => {
     setBlogData({
@@ -34,7 +31,30 @@ const AddBlogForm = () => {
       [key]: value,
     });
   };
-  const [image, setImage] = useState(null);
+  const handleUpload = async () => {
+    setLoading(true);
+    try {
+      await axios.post('https://65716200d61ba6fcc0125d7c.mockapi.io/HebJam/bloghome', {
+          title: blogData.title,
+          category: blogData.category,
+          image,
+          price: blogData.price,
+          detail: blogData.detail,
+          createdAt: new Date(),
+        })
+        .then(function (response) {
+          console.log(response);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+      setLoading(false);
+      navigation.navigate('Order');
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  const [image,  setImage] = useState(null);
   const navigation = useNavigation();
   return (
     <View style={styles.container}>
@@ -59,14 +79,14 @@ const AddBlogForm = () => {
             value={image}
             onChangeText={(text) => setImage(text)}
             placeholderTextColor={colors.peach(0.6)}
-            style={textInput.content}
+            style={textInput.image}
           />
         </View>
         <View style={textInput.borderDashed}>
           <TextInput
             placeholder="Nama Herbal"
             value={blogData.title}
-            onChangeText={(text) => handleChange("Nama Herbal", text)}
+            onChangeText={(text) => handleChange("title", text)}
             placeholderTextColor={colors.peach(0.6)}
             multiline
             style={textInput.title}
@@ -75,30 +95,35 @@ const AddBlogForm = () => {
         <View style={[textInput.borderDashed, { minHeight: 25 }]}>
           <TextInput
             placeholder="Price"
-            value={blogData.content}
-            onChangeText={(text) => handleChange("Price", text)}
+            value={blogData.price}
+            onChangeText={(text) => handleChange("price", text)}
             placeholderTextColor={colors.peach(0.6)}
             multiline
-            style={textInput.content}
+            style={textInput.price}
           />
         </View>
         <View style={[textInput.borderDashed, { minHeight: 200 }]}>
           <TextInput
             placeholder="Description"
-            value={blogData.content}
-            onChangeText={(text) => handleChange("Description", text)}
+            value={blogData.detail}
+            onChangeText={(text) => handleChange("detail", text)}
             placeholderTextColor={colors.peach(0.6)}
             multiline
-            style={textInput.content}
+            style={textInput.detail}
           />
         </View>
 
       </ScrollView>
       <View style={styles.bottomBar}>
-        <TouchableOpacity style={styles.button} onPress={() => { }}>
+        <TouchableOpacity style={styles.button} onPress={handleUpload}>
           <Text style={styles.buttonLabel}>Order</Text>
         </TouchableOpacity>
       </View>
+      {loading && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color={colors.blue()} />
+        </View>
+      )}
     </View>
   );
 };
@@ -152,6 +177,16 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: fontType["Pjs-SemiBold"],
     color: colors.white(),
+  },
+  loadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: colors.black(0.4),
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 const textInput = StyleSheet.create({

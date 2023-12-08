@@ -7,22 +7,17 @@ import { ListHorizontal, ItemSmall, Searchbar } from '../../components';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
 
 
 export default function Home() {
     return (
         <View style={styles.container}>
-            
+
             <ListBlog />
         </View>
     );
 }
-// const Itemsearch = () => {
-//     
-//     return (
-
-//     );
-// };
 const Stack = createStackNavigator();
 const AppNavigator = () => {
     return (
@@ -83,6 +78,7 @@ const ListBlog = () => {
         inputRange: [0, 52],
         outputRange: [0, 52],
     });
+    
     return (
         <View>
             <Animated.View style={[styles.header, { transform: [{ translateY: headerY }] }]}>

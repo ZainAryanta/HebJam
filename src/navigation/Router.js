@@ -1,7 +1,7 @@
 import React from 'react';
 import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Home, Order, Profile, Orderdetail, Search, Homeadd } from '../screens';
+import { Home, Order, Profile, Orderdetail, Search, Homeadd ,Orderedit} from '../screens';
 import { Home2, LocationDiscover, Receipt21, ProfileCircle } from 'iconsax-react-native';
 import { fontType, colors } from '../theme';
 
@@ -81,6 +81,18 @@ const Router = () => {
         name="MainApp"
         component={MainApp}
         options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Orderedit"
+        component={Orderedit}
+        options={{
+          headerShown: false,
+          animationEnabled: true,
+          animationTypeForReplace: 'pop',
+          gestureEnabled: true,
+          gestureDirection: 'horizontal',
+          ...TransitionPresets.SlideFromRightIOS,
+        }}
       />
       <Stack.Screen
         name="Orderdetail"

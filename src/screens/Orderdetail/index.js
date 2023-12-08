@@ -1,176 +1,287 @@
-import React, { useState } from 'react';
+import {StyleSheet, Text, View, ScrollView, TouchableOpacity, Animated, ActivityIndicator} from 'react-native';
+import React, {useState, useRef, useEffect} from 'react';
+import {ArrowLeft, Like1, Receipt21, Message, Share, More} from 'iconsax-react-native';
+import {useNavigation} from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
-import { ScrollView, StyleSheet, Text, View, FlatList, Image, ImageBackground, TouchableOpacity } from 'react-native';
-import { Element3, Like1, Send, ProfileCircle, Book, Home2, Message, Add, Receipt21 } from 'iconsax-react-native';
-import { BlogList } from '../../../data';
-import { fontType, colors } from '../../theme';
-import { ItemDetail, ItemProfile, ListHorizontal, ItemSmall } from '../../components';
+import {fontType, colors} from '../../theme';
+import {formatDate} from '../../utils/formatDate';
+import axios from 'axios';
+import ActionSheet from 'react-native-actions-sheet';
 
-const Orderdetail = ({ route }) => {
-    const { id } = route.params;
-    const selectedDetail = BlogList.find(wisata => wisata?.id === id);
-    return (
-        <View style={styles.container}>
-            <View style={styles.header}>
-                <Text style={styles.title}>Herbal detail</Text>
-                <Add color={colors.black()} variant="Linear" size={24} />
-            </View>
+const BlogDetail = ({route}) => {
+  const {id} = route.params;
+  const [iconStates, setIconStates] = useState({
+    liked: {variant: 'Linear', color: colors.grey(0.6)},
+    bookmarked: {variant: 'Linear', color: colors.grey(0.6)},
+  });
+  const [selectedBlog, setSelectedBlog] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-            <ScrollView showsVerticalScrollIndicator={false}>
-                <View style={{ paddingHorizontal: 24, gap: 10, paddingVertical: 10 }}>
-                    {/* {recentblog.map((item, index) => (
-                        <ItemDetail item={item} key={index} />
-                    ))} */}
-                    <View style={{ flexDirection: 'column', justifyContent: 'space-between', }}>
-                        <View>
-                            <TouchableOpacity style={styles.cardItem} onPress={() => { }}>
-                                <FastImage
-                                    style={styles.cardImage}
-                                    source={{
-                                        uri: selectedDetail?.image,
-                                        headers: { Authorization: 'someAuthToken' },
-                                        priority: FastImage.priority.low,
-                                    }}
-                                    resizeMode={FastImage.resizeMode.cover}>
-                                    <View style={styles.cardContent}>
-                                        <View style={styles.cardCategory}>
-                                            <View style={styles.categoryBadge}>
-                                                <Text style={styles.categoryLabel}>{selectedDetail?.category}</Text>
-                                            </View>
-                                        </View>
-                                        <View>
-                                            <View style={styles.cardIcon}>
-                                                <TouchableOpacity onPress={() => { }}>
-                                                    <Receipt21 color={colors.white()} size={20} />
-                                                </TouchableOpacity>
-                                            </View>
-                                        </View>
-                                    </View>
-                                </FastImage>
-                                <View style={{ paddingHorizontal: 15, paddingVertical: 10 }}>
-                                    <View style={{ gap: 10 }}>
-                                        <Text style={{ fontSize: 40, }}>
-                                            {selectedDetail?.title}
-                                        </Text>
-                                        <Text style={{ fontSize: 20, textAlign: 'justify', }}>
-                                            {selectedDetail?.detail}
-                                        </Text>
-                                    </View>
-                                    <View style={{}}>
-                                        <TouchableOpacity style={{ backgroundColor: '#79AC78', padding: 5, borderRadius: 15, top: 20 }} onPress={() => { }}>
-                                            <Text style={{ textAlign: 'center', color: colors.black(), fontSize: 25 }}>Noted    </Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                </View>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </View>
-            </ScrollView>
+  const actionSheetRef = useRef(null);
 
+  const openActionSheet = () => {
+    actionSheetRef.current?.show();
+  };
+
+  const closeActionSheet = () => {
+    actionSheetRef.current?.hide();
+  };
+
+  useEffect(() => {
+    getBlogById();
+  }, [id]);
+
+  const getBlogById = async () => {
+    try {
+      const response = await axios.get(
+        `https://65716200d61ba6fcc0125d7c.mockapi.io/HebJam/bloghome/${id}`,
+      );
+      setSelectedBlog(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const navigateEdit = () => {
+    closeActionSheet()
+    navigation.navigate('Orderedit', {id})
+  }
+  const handleDelete = async () => {
+   await axios.delete(`https://65716200d61ba6fcc0125d7c.mockapi.io/HebJam/bloghome/${id}`)
+      .then(() => {
+        closeActionSheet()
+        navigation.navigate('Order');
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+
+  const navigation = useNavigation();
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const diffClampY = Animated.diffClamp(scrollY, 0, 52);
+  const headerY = diffClampY.interpolate({
+    inputRange: [0, 52],
+    outputRange: [0, -52],
+  });
+  const bottomBarY = diffClampY.interpolate({
+    inputRange: [0, 52],
+    outputRange: [0, 52],
+  });
+
+  const toggleIcon = iconName => {
+    setIconStates(prevStates => ({
+      ...prevStates,
+      [iconName]: {
+        variant: prevStates[iconName].variant === 'Linear' ? 'Bold' : 'Linear',
+        color:
+          prevStates[iconName].variant === 'Linear'
+            ? colors.blue()
+            : colors.grey(0.6),
+      },
+    }));
+  };
+  return (
+    <View style={styles.container}>
+      <Animated.View
+        style={[styles.header, {transform: [{translateY: headerY}]}]}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <ArrowLeft color={colors.black()} variant="Linear" size={24} />
+        </TouchableOpacity>
+        <View style={{flexDirection: 'row', justifyContent: 'center', gap: 20}}>
+          <Share color={colors.black()} variant="Linear" size={24} />
+          <TouchableOpacity onPress={openActionSheet}>
+            <More
+              color={colors.black()}
+              variant="Linear"
+              style={{transform: [{rotate: '90deg'}]}}
+            />
+          </TouchableOpacity>
         </View>
-    );
+      </Animated.View>
+      {loading ? (
+        <View style={{justifyContent: 'center', alignItems: 'center', flex: 1}}>
+          <ActivityIndicator size={'large'} color={colors.blue()} />
+        </View>
+      ) : (
+        <Animated.ScrollView
+          showsVerticalScrollIndicator={false}
+          onScroll={Animated.event(
+            [{nativeEvent: {contentOffset: {y: scrollY}}}],
+            {useNativeDriver: true},
+          )}
+          contentContainerStyle={{
+            paddingHorizontal: 24,
+            paddingTop: 62,
+            paddingBottom: 54,
+          }}>
+          <FastImage
+            style={styles.image}
+            source={{
+              uri: selectedBlog?.image,
+              headers: {Authorization: 'someAuthToken'},
+              priority: FastImage.priority.high,
+            }}
+            resizeMode={FastImage.resizeMode.cover}></FastImage>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              marginTop: 15,
+            }}>
+          </View>
+          <Text style={styles.title}>{selectedBlog?.title}</Text>
+          <Text style={styles.content}>{selectedBlog?.detail}</Text>
+          <Text style={styles.price}>{selectedBlog?.price}</Text>
+        </Animated.ScrollView>
+      )}
+      <ActionSheet
+        ref={actionSheetRef}
+        containerStyle={{
+          borderTopLeftRadius: 25,
+          borderTopRightRadius: 25,
+          backgroundColor:colors.darkgreen(),
+          borderWidth:2,
+          borderColor:colors.gold(),
+        }}
+        indicatorStyle={{
+          width: 100,
+        }}
+        gestureEnabled={true}
+        defaultOverlayOpacity={0.3}>
+        <TouchableOpacity
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingVertical: 15,
+          }}
+          onPress={navigateEdit}
+          >
+          <Text
+            style={{
+              fontFamily: fontType['Pjs-Medium'],
+              color: colors.black(),
+              fontSize: 18,
+            }}>
+            Edit
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingVertical: 15,
+          }}
+          onPress={handleDelete}>
+          <Text
+            style={{
+              fontFamily: fontType['Pjs-Medium'],
+              color: colors.black(),
+              fontSize: 18,
+            }}>
+            Delete
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingVertical: 15,
+          }}
+          onPress={closeActionSheet}>
+          <Text
+            style={{
+              fontFamily: fontType['Pjs-Medium'],
+              color: 'red',
+              fontSize: 18,
+            }}>
+            Cancel
+          </Text>
+        </TouchableOpacity>
+      </ActionSheet>
+    </View>
+  );
 };
 
-export default Orderdetail;
+export default BlogDetail;
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: colors.white(),
-    },
-    header: {
-        paddingHorizontal: 25,
-        gap: 30,
-        justifyContent: 'space-between',
-        flexDirection: 'row',
-        alignItems: 'center',
-        elevation: 10,
-        paddingTop: 8,
-        paddingBottom: 4,
-        backgroundColor: '#79AC78',
-    },
-    title: {
-        fontSize: 25,
-        fontFamily: fontType['Ls-Reguler'],
-        color: colors.black(),
-        letterSpacing: -0.3,
-    },
-    cardItem: {
-        backgroundColor: colors.black(0.03),
-        borderRadius: 15,
-        //width: '100%',
-        height: 600,
-    },
-    cardbut: {
-        padding: 5,
-        // textAlign: 'center',
-        // justifyContent: 'flex-start',
-        backgroundColor: '#79AC78',
-        borderRadius: 30,
-    },
-    cardImage: {
-        marginTop: 15,
-        width: '100%',
-        height: 180,
-        borderRadius: 15,
-    },
-    cardContent: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        padding: 10,
-        borderRadius: 15,
-    },
-    cardInfo: {
-        flexDirection: 'row',
-        gap: 20,
-        alignItems: 'center',
-    },
-    cardTitle: {
-        fontFamily: fontType['Pjs-Bold'],
-        fontSize: 14,
-        color: colors.white(),
-    },
-    cardText: {
-        fontSize: 12,
-        fontFamily: fontType['Pjs-Medium'],
-        color: colors.grey(0.6),
-        marginHorizontal: 5,
-        marginTop: 0,
-    },
-    cardIcon: {
-        backgroundColor: colors.white(0.33),
-        padding: 5,
-        borderColor: colors.white(),
-        borderWidth: 0.5,
-        borderRadius: 5,
-    },
-    cardCategory: {
-        justifyContent: 'flex-end',
-        // height: '100%',
-        gap: 2,
-        // maxWidth: '60%',
-    },
-    categoryBadge: {
-        backgroundColor: colors.white(),
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-        borderRadius: 15,
-    },
-    categoryLabel: {
-        fontSize: 10,
-        fontFamily: fontType['Pjs-SemiBold'],
-        color: colors.blue(),
-    },
-    blogTitle: {
-        fontSize: 30,
-        fontFamily: fontType['Pjs-Bold'],
-        color: colors.black(),
-    },
-    blogContent: {
-        fontSize: 15,
-        lineHeight: 5,
-        fontFamily: fontType['Pjs-Medium'],
-        color: colors.grey(),
-    }
+  container: {
+    flex: 1,
+    backgroundColor: colors.peach(),
+  },
+  header: {
+    paddingHorizontal: 24,
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 52,
+    paddingTop: 8,
+    paddingBottom: 4,
+    position: 'absolute',
+    zIndex: 1000,
+    top: 0,
+    right: 0,
+    left: 0,
+    backgroundColor: colors.darkgreen(),
+    borderWidth:2,
+    borderColor:colors.gold(),
+  },
+  bottomBar: {
+    position: 'absolute',
+    zIndex: 1000,
+    backgroundColor: colors.white(),
+    paddingVertical: 14,
+    paddingHorizontal: 60,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  image: {
+    height: 250,
+    width: 'auto',
+    borderRadius: 15,
+    borderWidth:2,
+    borderColor:colors.gold(),
+  },
+  info: {
+    color: colors.black(),
+    fontFamily: fontType['Pjs-SemiBold'],
+    fontSize: 12,
+  },
+  category: {
+    color: colors.blue(),
+    fontFamily: fontType['Pjs-SemiBold'],
+    fontSize: 12,
+  },
+  date: {
+    color: colors.black(),
+    fontFamily: fontType['Pjs-Medium'],
+    fontSize: 15,
+  },
+  title: {
+    fontSize: 45,
+    fontFamily: fontType['Pjs-Bold'],
+    color: colors.black(),
+    marginTop: 1,
+    textAlign:'right',
+  },
+  content: {
+    color: colors.black(),
+    fontFamily: fontType['Pjs-Medium'],
+    fontSize: 19,
+    lineHeight: 20,
+    marginTop: 15,
+    textAlign:'right',
+  },
+  price: {
+    color: colors.black(),
+    fontFamily: fontType['Pjs-Medium'],
+    fontSize: 40,
+    lineHeight: 50,
+    marginTop: 15,
+  },
 });

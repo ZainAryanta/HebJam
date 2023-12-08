@@ -5,11 +5,12 @@ import { BlogList, CategoryList } from './data';
 import FastImage from 'react-native-fast-image';
 import { fontType, colors } from '../theme';
 import { useNavigation } from '@react-navigation/native';
+import { formatDate } from '../utils/formatDate';
 
 const ItemOrder = ({ item }) => {
   const navigation = useNavigation();
   return (
-    <TouchableOpacity style={itemVertical.container} onPress={() => navigation.navigate('Orderdetail', {  id: item.id })}>
+    <TouchableOpacity style={itemVertical.container} onPress={() => navigation.navigate('Orderdetail', { id: item.id })}>
       <View style={itemVertical.listCard}>
         <View style={itemVertical.cardItem}>
           <FastImage
@@ -17,7 +18,7 @@ const ItemOrder = ({ item }) => {
             style={itemVertical.cardImage}
             source={{
               priority: FastImage.priority.high,
-              uri: item.image,
+              uri: item?.image,
             }}
           />
           <View style={itemVertical.cardContent}>
@@ -27,14 +28,13 @@ const ItemOrder = ({ item }) => {
                 justifyContent: 'space-between',
               }}>
               <View style={{ gap: 5, width: '80%' }}>
-                <Text style={itemVertical.cardCategory}>{item.category}</Text>
-                <Text style={itemVertical.cardTitle}>
-                  {item.title}
-                </Text>
+                <Text style={itemVertical.cardTitle}>{item?.title}</Text>
+                <Text style={itemVertical.cardInfo}>{item?.price}</Text>
+                <Text style={itemVertical.cardText}>{item?.createdAt}</Text>
               </View>
             </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-              <View style={{ backgroundColor: colors.darkgreen(), padding: 5, borderRadius: 15 }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'flex-end',position:'absolute', left:150,top:80}}>
+              <View style={{ backgroundColor: colors.darkgreen(), padding: 2, borderRadius: 15 }}>
                 <Check size={30} color={colors.white()} />
               </View>
             </View>
@@ -56,13 +56,14 @@ const itemVertical = StyleSheet.create({
   },
 
   listCard: {
-    paddingHorizontal: 3,
+    paddingHorizontal: 5,
     paddingVertical: 5,
     gap: 15,
-    
+
   },
   cardItem: {
     height: 140,
+    width:320,
     backgroundColor: '#ffffff',
     borderWidth: 4,
     borderColor: colors.gold(),

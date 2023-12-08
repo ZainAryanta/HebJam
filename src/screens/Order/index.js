@@ -1,90 +1,86 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import FastImage from 'react-native-fast-image';
-import { ScrollView, StyleSheet, Text, View, FlatList, Image, ImageBackground, TouchableOpacity } from 'react-native';
-import { Element3, Like1, Send, ProfileCircle, Book, Home2, Message, Add, Receipt21 } from 'iconsax-react-native';
+import { ScrollView, StyleSheet, Text, View, FlatList, Image, ImageBackground, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native';
+import { Edit,Element3, Like1, Send, ProfileCircle, Book, Home2, Message, Add, Receipt21 } from 'iconsax-react-native';
 import { BlogList } from '../../../data';
 import { fontType, colors } from '../../theme';
 import { ItemDetail, ItemProfile, ListHorizontal, ItemSmall, ItemOrder } from '../../components';
-
-// const Order = () => {
-//   // const horizontalData = BlogList.map((item) => {
-//   //     return {
-//   //         title : item.title,
-//   //         image : item.image
-//   //     }
-//   // })
-//   // return (
-//   //     <View style={styles.container}>
-//   //       <View style={styles.header}>
-//   //         <Text style={styles.title}>Order</Text>
-//   //         <Add color={colors.black()} variant="Linear" size={24} />
-//   //       </View>
-//   //       <ScrollView showsVerticalScrollIndicator={false}>
-//   //         <View style={{ paddingHorizontal: 24, gap: 10, paddingVertical: 10 }}>
-//   //           <View style={{ flexDirection: 'column', justifyContent: 'space-between' }}>
-//   //             {horizontalData.map((item, index) => (
-//   //               <TouchableOpacity key={index} style={styles.cardItem} onPress={() => { }}>
-//   //                 <FastImage
-//   //                   style={styles.cardImage}
-//   //                   source={{
-//   //                     uri: item.image,
-//   //                     headers: { Authorization: 'someAuthToken' },
-//   //                     priority: FastImage.priority.high,
-//   //                   }}
-//   //                   resizeMode={FastImage.resizeMode.cover}>
-//   //                   <View style={styles.cardContent}>
-//   //                     <View>
-//   //                       <View style={styles.cardIcon}>
-//   //                         <TouchableOpacity onPress={() => { }}>
-//   //                           <Receipt21 color={colors.white()} size={20} />
-//   //                         </TouchableOpacity>
-//   //                       </View>
-//   //                     </View>
-//   //                   </View>
-//   //                 </FastImage>
-//   //               </TouchableOpacity>
-//   //             ))}
-//   //           </View>
-//   //         </View>
-//   //       </ScrollView>
-//   //     </View>
-//   //   );
-//   <View style={styles.container}>
-//     <View style={styles.header}>
-//       <Text style={styles.title}>HebJam.</Text>
-//     </View>
-//     <ListBlog />
-//   </View>
-// };
-// export default Order;
+import axios from 'axios';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
 export default function Order() {
   return (
-      <View style={styles.container}>
-          <View style={styles.header}>
-              <Text style={styles.title}>HebJam.</Text>
-          </View>
-          {/* <View style={styles.listCategory}>
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.title}>HebJam.</Text>
+      </View>
+      {/* <View style={styles.listCategory}>
               <FlatListCategory />
           </View> */}
-          <ListBlog />
-      </View>
+      <ListBlog />
+    </View>
   );
 }
 
 const ListBlog = () => {
-  const horizontalData = BlogList.slice(0, 5);
-  const verticalData = BlogList.slice(4,6);
+  // const horizontalData = BlogList.slice(0, 5);
+  // const verticalData = BlogList.slice(4, 6);
+
+  const [loading, setLoading] = useState(true);
+  const [blogData, setBlogData] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
+  const getDataBlog = async () => {
+    try {
+      const response = await axios.get(
+        'https://65716200d61ba6fcc0125d7c.mockapi.io/HebJam/bloghome',
+      );
+      setBlogData(response.data);
+
+      setLoading(false)
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      getDataBlog()
+      setRefreshing(false);
+    }, 1500);
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      getDataBlog();
+    }, [])
+  );
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <View style={styles.listBlog}>
-        {/* <Text style={{ fontSize: 18, fontWeight: 'bold', marginLeft: 25, marginTop: 10 }}>NEWS</Text>
-        <ListHorizontal data={horizontalData} /> */}
         <View style={styles.listCard}>
-          <Text style={{ fontSize: 25, fontWeight: 'bold', marginLeft: 25, marginVertical: 15 }}>Order List</Text>
+          {/* <Text style={{ fontSize: 25, fontWeight: 'bold', marginLeft: 25, marginVertical: 15 }}>Order List</Text>
           {verticalData.map((item, index) => (
             <ItemOrder item={item} key={index} />
-          ))}
+          ))} */}
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{
+              paddingHorizontal: 24,
+              gap: 10,
+              paddingVertical: 20,
+            }} refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }>
+
+            <View style={{ paddingVertical: 10, gap: 10 }}>
+              {loading ? (
+                <ActivityIndicator size={'large'} color={colors.blue()} />
+              ) : (
+                blogData.map((item, index) => <ItemOrder item={item} key={index} />)
+              )}
+            </View>
+          </ScrollView>
         </View>
       </View>
     </ScrollView>

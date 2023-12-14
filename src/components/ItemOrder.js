@@ -7,18 +7,21 @@ import { fontType, colors } from '../theme';
 import { useNavigation } from '@react-navigation/native';
 import { formatDate } from '../utils/formatDate';
 
-const ItemOrder = ({ item }) => {
-  const navigation = useNavigation();
-  return (
-    <TouchableOpacity style={itemVertical.container} onPress={() => navigation.navigate('Orderdetail', { id: item.id })}>
-      <View style={itemVertical.listCard}>
+const ItemOrders = ({ item }) => {
+  const navigation = useNavigation(); 
+  // item.map((key, value) => console.log(value))
+  console.log(item)
+  return ( 
+    <TouchableOpacity style={itemVertical.container} onPress={() => navigation.navigate('Orderdetail', { postId: item?.id })}>
+      <View style={itemVertical.listCard}> 
         <View style={itemVertical.cardItem}>
           <FastImage
             resizeMode={FastImage.resizeMode.cover}
             style={itemVertical.cardImage}
-            source={{
+            source={{ 
               priority: FastImage.priority.high,
               uri: item?.image,
+              headers: {Authorization: 'someAuthToken'},
             }}
           />
           <View style={itemVertical.cardContent}>
@@ -30,7 +33,7 @@ const ItemOrder = ({ item }) => {
               <View style={{ gap: 5, width: '80%' }}>
                 <Text style={itemVertical.cardTitle}>{item?.title}</Text>
                 <Text style={itemVertical.cardInfo}>{item?.price}</Text>
-                <Text style={itemVertical.cardText}>{item?.createdAt}</Text>
+                {/* <Text style={itemVertical.cardText}>{item?.createdAt}</Text> */}
               </View>
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'flex-end',position:'absolute', left:150,top:80}}>
@@ -44,6 +47,16 @@ const ItemOrder = ({ item }) => {
     </TouchableOpacity>
   );
 };
+
+const ItemOrder = ({item}) => {
+  return (
+   <FlatList
+   data={item}
+   renderItem={({item}) => <ItemOrders item={item}/>}
+   keyExtractor={item => item.id}
+   /> 
+  )
+}
 
 export default ItemOrder;
 

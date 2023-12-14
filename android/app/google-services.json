@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "196276878280",
+    "project_id": "hebjam-fcb22",
+    "storage_bucket": "hebjam-fcb22.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:196276878280:android:2f345742037b7c3ba0defd",
+        "android_client_info": {
+          "package_name": "com.hebjam"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAK2ALG0gxkOl8y40mT5HBq3-70K0js4YY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

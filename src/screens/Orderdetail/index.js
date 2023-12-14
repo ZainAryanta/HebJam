@@ -1,62 +1,77 @@
-import {StyleSheet, Text, View, ScrollView, TouchableOpacity, Animated, ActivityIndicator} from 'react-native';
-import React, {useState, useRef, useEffect} from 'react';
-import {ArrowLeft, Like1, Receipt21, Message, Share, More} from 'iconsax-react-native';
-import {useNavigation} from '@react-navigation/native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Animated, ActivityIndicator } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { ArrowLeft, Like1, Receipt21, Message, Share, More } from 'iconsax-react-native';
+import { useNavigation } from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
-import {fontType, colors} from '../../theme';
-import {formatDate} from '../../utils/formatDate';
+import { fontType, colors } from '../../theme';
+import { formatDate } from '../../utils/formatDate';
 import axios from 'axios';
 import ActionSheet from 'react-native-actions-sheet';
+import firestore from '@react-native-firebase/firestore';
+import storage from '@react-native-firebase/storage';
+import ImagePicker from 'react-native-image-crop-picker';
 
-const BlogDetail = ({route}) => {
-  const {id} = route.params;
+const BlogDetail = ({ route }) => {
+  const { postId } = route.params;
   const [iconStates, setIconStates] = useState({
-    liked: {variant: 'Linear', color: colors.grey(0.6)},
-    bookmarked: {variant: 'Linear', color: colors.grey(0.6)},
+    liked: { variant: 'Linear', color: colors.grey(0.6) },
+    bookmarked: { variant: 'Linear', color: colors.grey(0.6) },
   });
   const [selectedBlog, setSelectedBlog] = useState(null);
   const [loading, setLoading] = useState(true);
-
   const actionSheetRef = useRef(null);
-
   const openActionSheet = () => {
     actionSheetRef.current?.show();
   };
-
   const closeActionSheet = () => {
     actionSheetRef.current?.hide();
   };
-
   useEffect(() => {
-    getBlogById();
-  }, [id]);
+    const subscriber = firestore()
+      .collection('blog')
+      .doc(postId)
+      .onSnapshot(documentSnapshot => {
+        const blogData = documentSnapshot.data();
+        if (blogData) {
+          console.log('Blog data: ', blogData);
+          setSelectedBlog(blogData)
+        } else {
+          console.log(`Blog with ID ${postId} not found.`);
+        }
+        setLoading(false);
+      });
 
-  const getBlogById = async () => {
+    return () => subscriber();
+  }, [postId]);
+
+  const navigateEdit = () => {
+    closeActionSheet();
+    navigation.navigate('Orderedit', { postId });
+  };
+  const handleDelete = async () => {
+    setLoading(true);
     try {
-      const response = await axios.get(
-        `https://65716200d61ba6fcc0125d7c.mockapi.io/HebJam/bloghome/${id}`,
-      );
-      setSelectedBlog(response.data);
-      setLoading(false);
+      await firestore()
+        .collection('blog')
+        .doc(postId)
+        .delete()
+        .then(() => {
+          console.log('Blog deleted!');
+        });
+      if (selectedBlog?.image) {
+        const imageRef = storage().refFromURL(selectedBlog?.image);
+        await imageRef.delete();
+      }
+      console.log('Blog deleted!');
+      closeActionSheet();
+      setSelectedBlog(null);
+      setLoading(false)
+      navigation.navigate('Order');
+      console.log(selectedBlog.postId)
     } catch (error) {
       console.error(error);
     }
   };
-
-  const navigateEdit = () => {
-    closeActionSheet()
-    navigation.navigate('Orderedit', {id})
-  }
-  const handleDelete = async () => {
-   await axios.delete(`https://65716200d61ba6fcc0125d7c.mockapi.io/HebJam/bloghome/${id}`)
-      .then(() => {
-        closeActionSheet()
-        navigation.navigate('Order');
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }
 
   const navigation = useNavigation();
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -85,31 +100,31 @@ const BlogDetail = ({route}) => {
   return (
     <View style={styles.container}>
       <Animated.View
-        style={[styles.header, {transform: [{translateY: headerY}]}]}>
+        style={[styles.header, { transform: [{ translateY: headerY }] }]}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <ArrowLeft color={colors.black()} variant="Linear" size={24} />
         </TouchableOpacity>
-        <View style={{flexDirection: 'row', justifyContent: 'center', gap: 20}}>
+        <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 20 }}>
           <Share color={colors.black()} variant="Linear" size={24} />
           <TouchableOpacity onPress={openActionSheet}>
             <More
               color={colors.black()}
               variant="Linear"
-              style={{transform: [{rotate: '90deg'}]}}
+              style={{ transform: [{ rotate: '90deg' }] }}
             />
           </TouchableOpacity>
         </View>
       </Animated.View>
       {loading ? (
-        <View style={{justifyContent: 'center', alignItems: 'center', flex: 1}}>
+        <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
           <ActivityIndicator size={'large'} color={colors.blue()} />
         </View>
       ) : (
         <Animated.ScrollView
           showsVerticalScrollIndicator={false}
           onScroll={Animated.event(
-            [{nativeEvent: {contentOffset: {y: scrollY}}}],
-            {useNativeDriver: true},
+            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+            { useNativeDriver: true },
           )}
           contentContainerStyle={{
             paddingHorizontal: 24,
@@ -120,7 +135,7 @@ const BlogDetail = ({route}) => {
             style={styles.image}
             source={{
               uri: selectedBlog?.image,
-              headers: {Authorization: 'someAuthToken'},
+              headers: { Authorization: 'someAuthToken' },
               priority: FastImage.priority.high,
             }}
             resizeMode={FastImage.resizeMode.cover}></FastImage>
@@ -134,6 +149,7 @@ const BlogDetail = ({route}) => {
           <Text style={styles.title}>{selectedBlog?.title}</Text>
           <Text style={styles.content}>{selectedBlog?.detail}</Text>
           <Text style={styles.price}>{selectedBlog?.price}</Text>
+          {/* <Text style={styles.date}>{selectedBlog?.createdAt}</Text> */}
         </Animated.ScrollView>
       )}
       <ActionSheet
@@ -141,9 +157,9 @@ const BlogDetail = ({route}) => {
         containerStyle={{
           borderTopLeftRadius: 25,
           borderTopRightRadius: 25,
-          backgroundColor:colors.darkgreen(),
-          borderWidth:2,
-          borderColor:colors.gold(),
+          backgroundColor: colors.darkgreen(),
+          borderWidth: 2,
+          borderColor: colors.gold(),
         }}
         indicatorStyle={{
           width: 100,
@@ -157,7 +173,7 @@ const BlogDetail = ({route}) => {
             paddingVertical: 15,
           }}
           onPress={navigateEdit}
-          >
+        >
           <Text
             style={{
               fontFamily: fontType['Pjs-Medium'],
@@ -225,8 +241,8 @@ const styles = StyleSheet.create({
     right: 0,
     left: 0,
     backgroundColor: colors.darkgreen(),
-    borderWidth:2,
-    borderColor:colors.gold(),
+    borderWidth: 2,
+    borderColor: colors.gold(),
   },
   bottomBar: {
     position: 'absolute',
@@ -244,8 +260,8 @@ const styles = StyleSheet.create({
     height: 250,
     width: 'auto',
     borderRadius: 15,
-    borderWidth:2,
-    borderColor:colors.gold(),
+    borderWidth: 2,
+    borderColor: colors.gold(),
   },
   info: {
     color: colors.black(),
@@ -267,7 +283,7 @@ const styles = StyleSheet.create({
     fontFamily: fontType['Pjs-Bold'],
     color: colors.black(),
     marginTop: 1,
-    textAlign:'right',
+    textAlign: 'right',
   },
   content: {
     color: colors.black(),
@@ -275,7 +291,7 @@ const styles = StyleSheet.create({
     fontSize: 19,
     lineHeight: 20,
     marginTop: 15,
-    textAlign:'right',
+    textAlign: 'right',
   },
   price: {
     color: colors.black(),

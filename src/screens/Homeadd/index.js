@@ -7,23 +7,25 @@ import {
   StyleSheet,
   ScrollView,
 } from "react-native";
-import { ArrowLeft } from "iconsax-react-native";
+import { ArrowLeft,AddSquare,Add} from "iconsax-react-native";
 import { useNavigation } from "@react-navigation/native";
 import { fontType, colors } from "../../theme";
 import axios from 'axios';
+import FastImage from 'react-native-fast-image';
+import ImagePicker from 'react-native-image-crop-picker';
+import storage from '@react-native-firebase/storage';
+import firestore from '@react-native-firebase/firestore';
 
 const [loading, setLoading] = useState(false);
 
-
-
 const AddBlogForm = () => {
+  const navigation = useNavigation();
   const [blogData, setBlogData] = useState({
-    title: "",
-    detail: "",
-    category: {},
-    price:"",
-    image:"",
-    // createdAt:{},
+    title: '',
+    detail: '',
+    price: '',
+    image: '',
+    createdAt: 0
   });
   const handleChange = (key, value) => {
     setBlogData({
@@ -31,31 +33,48 @@ const AddBlogForm = () => {
       [key]: value,
     });
   };
+  const handleImagePick = async () => {
+    ImagePicker.openPicker({
+      width: 1920,
+      height: 1080,
+      cropping: true,
+    })
+      .then(image => {
+        console.log(image);
+        setImage(image.path);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
   const handleUpload = async () => {
+    let filename = image.substring(image.lastIndexOf('/') + 1);
+    const extension = filename.split('.').pop();
+    const name = filename.split('.').slice(0, -1).join('.');
+    filename = name + Date.now() + '.' + extension;
+    const reference = storage().ref(`blogimages/${filename}`);
+
     setLoading(true);
     try {
-      await axios.post('https://65716200d61ba6fcc0125d7c.mockapi.io/HebJam/bloghome', {
-          title: blogData.title,
-          category: blogData.category,
-          image,
-          price: blogData.price,
-          detail: blogData.detail,
-          createdAt: new Date(),
-        })
-        .then(function (response) {
-          console.log(response);
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
+      await reference.putFile(image);
+      const url = await reference.getDownloadURL();
+      await firestore().collection('blog').add({
+        title: blogData.title,
+        image:url,
+        price: blogData.price,
+        detail: blogData.detail,
+        createdAt: new Date(),
+      });
       setLoading(false);
+      console.log('Blog added!');
       navigation.navigate('Order');
-    } catch (e) {
-      console.log(e);
+    } catch (error) {
+      console.log(error);
     }
   };
-  const [image,  setImage] = useState(null);
-  const navigation = useNavigation();
+  const [image, setImage] = useState(null);
+  
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -73,15 +92,58 @@ const AddBlogForm = () => {
           gap: 10,
         }}
       >
-        <View style={[textInput.borderDashed]}>
-          <TextInput
-            placeholder="Image"
-            value={image}
-            onChangeText={(text) => setImage(text)}
-            placeholderTextColor={colors.peach(0.6)}
-            style={textInput.image}
-          />
-        </View>
+        {image ? (
+          <View style={{ position: 'relative' }}>
+            <FastImage
+              style={{ width: '100%', height: 127, borderRadius: 5 }}
+              source={{
+                uri: image,
+                headers: { Authorization: 'someAuthToken' },
+                priority: FastImage.priority.high,
+              }}
+              resizeMode={FastImage.resizeMode.cover}
+            />
+            <TouchableOpacity
+              style={{
+                position: 'absolute',
+                top: -5,
+                right: -5,
+                backgroundColor: colors.blue(),
+                borderRadius: 25,
+              }}
+              onPress={() => setImage(null)}>
+              <Add
+                size={20}
+                variant="Linear"
+                color={colors.white()}
+                style={{ transform: [{ rotate: '45deg' }] }}
+              />
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <TouchableOpacity onPress={handleImagePick}>
+            <View
+              style={[
+                textInput.borderDashed,
+                {
+                  gap: 10,
+                  paddingVertical: 30,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                },
+              ]}>
+              <AddSquare color={colors.grey(0.6)} variant="Linear" size={42} />
+              <Text
+                style={{
+                  fontFamily: fontType['Pjs-Regular'],
+                  fontSize: 12,
+                  color: colors.grey(0.6),
+                }}>
+                Upload Thumbnail
+              </Text>
+            </View>
+          </TouchableOpacity>
+        )}
         <View style={textInput.borderDashed}>
           <TextInput
             placeholder="Nama Herbal"
@@ -171,7 +233,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.darkgreen(),
     borderRadius: 20,
     alignItems: "center",
-    width:350,
+    width: 350,
   },
   buttonLabel: {
     fontSize: 14,
@@ -196,7 +258,7 @@ const textInput = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 15,
     padding: 18,
-    marginTop:10,
+    marginTop: 10,
     borderColor: colors.gold(0.8),
   },
   title: {

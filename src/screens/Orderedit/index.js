@@ -3,10 +3,13 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Activi
 import { ArrowLeft } from 'iconsax-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { fontType, colors } from '../../theme';
-import axios from 'axios';
+import ImagePicker from 'react-native-image-crop-picker';
+import storage from '@react-native-firebase/storage';
+import firestore from '@react-native-firebase/firestore';
+import FastImage from 'react-native-fast-image';
 
 const EditBlogForm = ({ route }) => {
-    const { id } = route.params;
+    const { postId } = route.params;
 
     const [blogData, setBlogData] = useState({
         title: '',
@@ -22,48 +25,65 @@ const EditBlogForm = ({ route }) => {
     const [image, setImage] = useState(null);
     const navigation = useNavigation();
     const [loading, setLoading] = useState(true);
+    const [oldImage, setOldImage] = useState(null);
     useEffect(() => {
-        getBlogById();
-    }, [id]);
 
-    const getBlogById = async () => {
-        try {
-            const response = await axios.get(
-                `https://65716200d61ba6fcc0125d7c.mockapi.io/HebJam/bloghome/${id}`,
-            );
-            setBlogData({
-                title: response.data.title,
-                detail: response.data.detail,
-                price: response.data.price,
-            })
-            setImage(response.data.image)
-            setLoading(false);
-        } catch (error) {
-            console.error(error);
-        }
-    };
-    const handleUpdate = async () => {
+        
+        const subscriber = firestore()
+          .collection('blog')
+          .doc(postId)
+          .onSnapshot(documentSnapshot => {
+            const blogData = documentSnapshot.data();
+            if (blogData) {
+              console.log('Blog data: ', blogData);
+              setBlogData({
+                title: blogData.title,
+                detail: blogData.detail,
+                price: blogData.price,
+
+              });
+              setOldImage(blogData.image);
+              setImage(blogData.image);
+              setLoading(false);
+            } else {
+              console.log(`Blog with ID ${postId} not found.`);
+            }
+          });
+        setLoading(false);
+        return () => subscriber();
+      }, [postId]);
+
+
+      const handleUpdate = async () => {
         setLoading(true);
+        let filename = image.substring(image.lastIndexOf('/') + 1);
+        const extension = filename.split('.').pop();
+        const name = filename.split('.').slice(0, -1).join('.');
+        filename = name + Date.now() + '.' + extension;
+        const reference = storage().ref(`blogimages/${filename}`);
         try {
-            await axios
-                .put(`https://65716200d61ba6fcc0125d7c.mockapi.io/HebJam/bloghome/${id}`, {
-                    title: blogData.title,
-                    detail: blogData.detail,
-                    price: blogData.price,
-                    image,
-                })
-                .then(function (response) {
-                    console.log(response);
-                })
-                .catch(function (error) {
-                    console.log(error);
-                });
-            setLoading(false);
-            navigation.navigate('Order');
-        } catch (e) {
-            console.log(e);
+          if (image !== oldImage && oldImage) {
+            const oldImageRef = storage().refFromURL(oldImage);
+            await oldImageRef.delete();
+          }
+          if (image !== oldImage) {
+            await reference.putFile(image);
+          }
+          const url =
+            image !== oldImage ? await reference.getDownloadURL() : oldImage;
+          await firestore().collection('blog').doc(postId).update({
+            title: blogData.title,
+            detail: blogData.detail,
+            price: blogData.price,
+            image: url,
+          });
+          setLoading(false);
+          console.log('Blog Updated!');
+          navigation.navigate('Order', {postId});
+        } catch (error) {
+          console.log(error);
         }
-    };
+      };
 
     return (
         <View style={styles.container}>

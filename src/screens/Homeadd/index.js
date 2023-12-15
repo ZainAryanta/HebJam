@@ -7,7 +7,7 @@ import {
   StyleSheet,
   ScrollView,
 } from "react-native";
-import { ArrowLeft,AddSquare,Add} from "iconsax-react-native";
+import { ArrowLeft, AddSquare, Add } from "iconsax-react-native";
 import { useNavigation } from "@react-navigation/native";
 import { fontType, colors } from "../../theme";
 import axios from 'axios';
@@ -15,6 +15,7 @@ import FastImage from 'react-native-fast-image';
 import ImagePicker from 'react-native-image-crop-picker';
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
 
 const [loading, setLoading] = useState(false);
 
@@ -53,17 +54,18 @@ const AddBlogForm = () => {
     const name = filename.split('.').slice(0, -1).join('.');
     filename = name + Date.now() + '.' + extension;
     const reference = storage().ref(`blogimages/${filename}`);
-
+    const authorId = auth().currentUser.uid;
     setLoading(true);
     try {
       await reference.putFile(image);
       const url = await reference.getDownloadURL();
       await firestore().collection('blog').add({
         title: blogData.title,
-        image:url,
+        image: url,
         price: blogData.price,
         detail: blogData.detail,
         createdAt: new Date(),
+        authorId
       });
       setLoading(false);
       console.log('Blog added!');
@@ -73,8 +75,8 @@ const AddBlogForm = () => {
     }
   };
   const [image, setImage] = useState(null);
-  
 
+  
   return (
     <View style={styles.container}>
       <View style={styles.header}>

@@ -1,20 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { ScrollView, StyleSheet, Text, View, FlatList, Image, ImageBackground, TouchableOpacity } from 'react-native';
-import { Element3, Like1, Send, ProfileCircle, Book, Home2, Message, Add, Archive, ArchiveTick } from 'iconsax-react-native';
+import { Element3, Like1, Send, ProfileCircle, Book, Home2, Setting2, Message, Add, Archive, ArchiveTick } from 'iconsax-react-native';
 import FastImage from 'react-native-fast-image';
 import { BlogList, ProfileData } from '../../../data';
 import { fontType, colors } from '../../theme';
 import { ItemOrder, ItemProfile, ListHorizontal, ItemSmall } from '../../components';
-
+import firestore from '@react-native-firebase/firestore';
+import { formatNumber } from '../../utils/formatNumber';
+import auth from '@react-native-firebase/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { formatDate } from '../../utils/formatDate';
+import ActionSheet from 'react-native-actions-sheet';
+import { useNavigation } from '@react-navigation/native';
 
 const Profile = () => {
+    const navigation = useNavigation();
+    const actionSheetRef = useRef(null);
+    const openActionSheet = () => {
+        actionSheetRef.current?.show();
+    };
+    const closeActionSheet = () => {
+        actionSheetRef.current?.hide();
+    };
+    const handleLogout = async () => {
+        try {
+            closeActionSheet();
+            await auth().signOut();
+            await AsyncStorage.removeItem('userData');
+            navigation.replace('Login');
+        } catch (error) {
+            console.error(error);
+        }
+    };
     return (
         <View style={styles.container}>
+
             <FastImage style={styles.imageBanner} source={{
                 uri: 'https://i.pinimg.com/564x/21/87/36/218736a4a20dc61feadffb949f6dcb00.jpg',
                 headers: { Authorization: 'someAuthToken' },
                 priority: FastImage.priority.high,
             }}>
+                <TouchableOpacity onPress={openActionSheet}>
+                    <Setting2 color={colors.white()} variant="Linear" size={30} />
+                </TouchableOpacity>
                 <ScrollView
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{
@@ -81,6 +109,50 @@ const Profile = () => {
                 <ArchiveTick style={{ marginLeft: 10, marginTop: 10, }} color={colors.darkModeBlack()} size={25} />
                 <Text style={profile.konten}>Nyanta.exe@gmail.com</Text>
             </TouchableOpacity>
+            <ActionSheet
+                ref={actionSheetRef}
+                containerStyle={{
+                    borderTopLeftRadius: 25,
+                    borderTopRightRadius: 25,
+                }}
+                indicatorStyle={{
+                    width: 100,
+                }}
+                gestureEnabled={true}
+                defaultOverlayOpacity={0.3}>
+                <TouchableOpacity
+                    style={{
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        paddingVertical: 15,
+                    }}
+                    onPress={handleLogout}>
+                    <Text
+                        style={{
+                            fontFamily: fontType['Pjs-Medium'],
+                            color: colors.black(),
+                            fontSize: 18,
+                        }}>
+                        Log out
+                    </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={{
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        paddingVertical: 15,
+                    }}
+                    onPress={closeActionSheet}>
+                    <Text
+                        style={{
+                            fontFamily: fontType['Pjs-Medium'],
+                            color: 'red',
+                            fontSize: 18,
+                        }}>
+                        Cancel
+                    </Text>
+                </TouchableOpacity>
+            </ActionSheet>
         </View>
     );
 };
@@ -173,8 +245,8 @@ const profile = StyleSheet.create({
     konten: {
         // textAlign: 'center',
         textAlign: 'center',
-        flexDirection:'row',
-        top:-25,
+        flexDirection: 'row',
+        top: -25,
         fontSize: 17,
         fontFamily: fontType['Pjs-Regular'],
         color: colors.black(),
